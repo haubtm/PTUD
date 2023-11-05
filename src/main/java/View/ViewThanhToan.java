@@ -5,25 +5,11 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.xml.crypto.Data;
-
-import DAO.ChiTietHoaDon_Dao;
-import DAO.HoaDon_Dao;
-import DAO.NhanVien_DAO;
-import Entity.ChiTietHoaDon;
-import Entity.HoaDon;
-import Entity.KhachHang;
-
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
 import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -39,6 +25,11 @@ public class ViewThanhToan extends JFrame {
 	private JTextField textFieldMaKH;
 	private JTextField textFieldTenKH;
 	private JTextField textFieldTongTien;
+	private JTextField textField_3;
+	private JTextField textField_1;
+	private JTextField txtVnd;
+	private JTextField textField_2;
+	private JTextField textField_4;
 	private JTextField txtHd;
 
 	/**
@@ -48,10 +39,7 @@ public class ViewThanhToan extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					String maHD = "HD200303200001";
-					KhachHang kh = new KhachHang("KH201923320012", "Lê Bá Hậu", "0385345330", true, "Gò Vấp");
-					ArrayList<ChiTietHoaDon> ls = new ArrayList<>();
-					ViewThanhToan frame = new ViewThanhToan(maHD, ls, kh, "10000");
+					ViewThanhToan frame = new ViewThanhToan();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -60,8 +48,10 @@ public class ViewThanhToan extends JFrame {
 		});
 	}
 
-	public ViewThanhToan(final String maHD, final ArrayList<ChiTietHoaDon> ls_cthd, final KhachHang kh, String tongTien) {		
-		final NhanVien_DAO nv = new NhanVien_DAO();
+	/**
+	 * Create the frame.
+	 */
+	public ViewThanhToan() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(500,400);
 		setLocationRelativeTo(null);
@@ -92,9 +82,7 @@ public class ViewThanhToan extends JFrame {
 		
 		textField = new JTextField();
 		textField.setForeground(new Color(255, 255, 255));
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		final Date date = new Date();
-		textField.setText(dateFormat.format(date));
+		textField.setText("20/03/2023");
 		textField.setEditable(false);
 		textField.setBackground(UIManager.getColor("SystemColor.menu"));
 		textField.setBorder(null);
@@ -110,24 +98,34 @@ public class ViewThanhToan extends JFrame {
 		
 		JLabel lblMaKH = new JLabel("Mã Khách Hàng:");
 		lblMaKH.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblMaKH.setBounds(75, 70, 136, 17);
+		lblMaKH.setBounds(75, 59, 136, 17);
 		panel_1.add(lblMaKH);
 		
 		JLabel lblTenKH = new JLabel("Tên Khách Hàng:");
 		lblTenKH.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblTenKH.setBounds(75, 110, 136, 17);
+		lblTenKH.setBounds(75, 84, 136, 17);
 		panel_1.add(lblTenKH);
 		
 		JLabel lblTongThanhToan = new JLabel("Tổng Thanh Toán:");
 		lblTongThanhToan.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblTongThanhToan.setBounds(75, 151, 136, 17);
+		lblTongThanhToan.setBounds(75, 109, 136, 17);
 		panel_1.add(lblTongThanhToan);
+		
+		JLabel lblTienKHDua = new JLabel("Tiền Khách Đưa:");
+		lblTienKHDua.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblTienKHDua.setBounds(75, 134, 136, 17);
+		panel_1.add(lblTienKHDua);
+		
+		JLabel lblTienTra = new JLabel("Tiền Trả Khách:");
+		lblTienTra.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblTienTra.setBounds(75, 159, 136, 17);
+		panel_1.add(lblTienTra);
 		
 		final JButton btnDong = new JButton("Đóng");
 		btnDong.setBounds(187, 204, 65, 35);
 		panel_1.add(btnDong);
 		
-		final JButton btnThanhToan = new JButton("Thanh toán");
+		JButton btnThanhToan = new JButton("Thanh toán");
 		btnThanhToan.setBounds(262, 204, 100, 35);
 		panel_1.add(btnThanhToan);
 		
@@ -138,18 +136,18 @@ public class ViewThanhToan extends JFrame {
 		textFieldMaKH = new JTextField();
 		textFieldMaKH.setHorizontalAlignment(SwingConstants.LEFT);
 		textFieldMaKH.setFont(new Font("Tahoma", Font.BOLD, 14));
-		textFieldMaKH.setText(kh.getMaKhachHang());
+		textFieldMaKH.setText("KH200320100001");
 		textFieldMaKH.setEditable(false);
 		textFieldMaKH.setColumns(10);
 		textFieldMaKH.setBorder(null);
 		textFieldMaKH.setOpaque(false);
 		textFieldMaKH.setBackground(new Color(0, 0, 0, 0));
-		textFieldMaKH.setBounds(262, 69, 197, 20);
+		textFieldMaKH.setBounds(262, 58, 156, 20);
 		panel_1.add(textFieldMaKH);
 		textFieldMaKH.setColumns(10);
 		
 		textFieldTenKH = new JTextField();
-		textFieldTenKH.setText(kh.getHoTen());
+		textFieldTenKH.setText("Lê Bá Hậu");
 		textFieldTenKH.setOpaque(false);
 		textFieldTenKH.setHorizontalAlignment(SwingConstants.LEFT);
 		textFieldTenKH.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -157,11 +155,11 @@ public class ViewThanhToan extends JFrame {
 		textFieldTenKH.setColumns(10);
 		textFieldTenKH.setBorder(null);
 		textFieldTenKH.setBackground(new Color(0, 0, 0, 0));
-		textFieldTenKH.setBounds(262, 109, 212, 20);
+		textFieldTenKH.setBounds(262, 84, 156, 20);
 		panel_1.add(textFieldTenKH);
 		
 		textFieldTongTien = new JTextField();
-		textFieldTongTien.setText(tongTien);
+		textFieldTongTien.setText("3400000");
 		textFieldTongTien.setOpaque(false);
 		textFieldTongTien.setHorizontalAlignment(SwingConstants.LEFT);
 		textFieldTongTien.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -169,11 +167,66 @@ public class ViewThanhToan extends JFrame {
 		textFieldTongTien.setColumns(10);
 		textFieldTongTien.setBorder(null);
 		textFieldTongTien.setBackground(new Color(0, 0, 0, 0));
-		textFieldTongTien.setBounds(262, 150, 197, 20);
+		textFieldTongTien.setBounds(262, 109, 88, 20);
 		panel_1.add(textFieldTongTien);
 		
+		textField_3 = new JTextField();
+		textField_3.setText("100000");
+		textField_3.setOpaque(false);
+		textField_3.setHorizontalAlignment(SwingConstants.LEFT);
+		textField_3.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textField_3.setEditable(false);
+		textField_3.setColumns(10);
+		textField_3.setBorder(null);
+		textField_3.setBackground(new Color(0, 0, 0, 0));
+		textField_3.setBounds(262, 159, 88, 20);
+		panel_1.add(textField_3);
+		
+		textField_1 = new JTextField();
+		textField_1.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textField_1.setText("3500000");
+		textField_1.setBounds(262, 134, 88, 20);
+		panel_1.add(textField_1);
+		textField_1.setColumns(10);
+		
+		txtVnd = new JTextField();
+		txtVnd.setText("VND");
+		txtVnd.setOpaque(false);
+		txtVnd.setHorizontalAlignment(SwingConstants.LEFT);
+		txtVnd.setFont(new Font("Tahoma", Font.BOLD, 14));
+		txtVnd.setEditable(false);
+		txtVnd.setColumns(10);
+		txtVnd.setBorder(null);
+		txtVnd.setBackground(new Color(0, 0, 0, 0));
+		txtVnd.setBounds(360, 133, 58, 20);
+		panel_1.add(txtVnd);
+		
+		textField_2 = new JTextField();
+		textField_2.setText("VND");
+		textField_2.setOpaque(false);
+		textField_2.setHorizontalAlignment(SwingConstants.LEFT);
+		textField_2.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textField_2.setEditable(false);
+		textField_2.setColumns(10);
+		textField_2.setBorder(null);
+		textField_2.setBackground(new Color(0, 0, 0, 0));
+		textField_2.setBounds(360, 109, 58, 20);
+		panel_1.add(textField_2);
+		
+		textField_4 = new JTextField();
+		textField_4.setText("VND");
+		textField_4.setOpaque(false);
+		textField_4.setHorizontalAlignment(SwingConstants.LEFT);
+		textField_4.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textField_4.setEditable(false);
+		textField_4.setColumns(10);
+		textField_4.setBorder(null);
+		textField_4.setBackground(new Color(0, 0, 0, 0));
+		textField_4.setBounds(360, 159, 58, 20);
+		panel_1.add(textField_4);
+		
 		txtHd = new JTextField();
-		txtHd.setText(maHD);
+		txtHd.setText("HD200320100001");
 		txtHd.setOpaque(false);
 		txtHd.setHorizontalAlignment(SwingConstants.CENTER);
 		txtHd.setFont(new Font("Tahoma", Font.BOLD, 20));
@@ -181,43 +234,20 @@ public class ViewThanhToan extends JFrame {
 		txtHd.setColumns(10);
 		txtHd.setBorder(null);
 		txtHd.setBackground(new Color(0, 0, 0, 0));
-		txtHd.setBounds(154, 21, 189, 27);
+		txtHd.setBounds(161, 21, 189, 27);
 		panel_1.add(txtHd);
 		
 		// Code xu ly event
 		btnDong.addActionListener(new ActionListener() {
 			
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				Object o = e.getSource();
 		    	if(o.equals(btnDong)) {
-		    		ViewHoaDon hd = new ViewHoaDon();
-		            hd.setLocationRelativeTo(null);
-		            hd.setVisible(true);
 		    		dispose();
 		        }
 			}
 		});
-		
-		btnThanhToan.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Object o = e.getSource();
-		    	if(o.equals(btnThanhToan)) {
-		    		HoaDon_Dao hd_dao = new HoaDon_Dao();
-		    		ChiTietHoaDon_Dao cthd_dao = new ChiTietHoaDon_Dao();
-		    		HoaDon hd = new HoaDon(maHD, date, ABORT, kh, nv.getNhanVienById("NV001"));
-		    		hd_dao.addHoaDon(hd);
-		    		for (ChiTietHoaDon chiTietHoaDon : ls_cthd) {
-						cthd_dao.addChiTietHD(chiTietHoaDon);
-					}
-		    		JOptionPane.showConfirmDialog(null, "Tạo hoá đơn thành công");
-		    		btnThanhToan.setEnabled(false);
-		        }
-			}
-		});
-		
-		
 	}
 
 }

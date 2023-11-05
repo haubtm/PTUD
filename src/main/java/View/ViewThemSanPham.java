@@ -90,6 +90,7 @@ public class ViewThemSanPham extends JFrame {
 		btnTaiLen.setBounds(67, 244, 85, 21);
 		contentPane.add(btnTaiLen);
 		btnTaiLen.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fileChooser = new JFileChooser();
                 int returnValue = fileChooser.showOpenDialog(null);

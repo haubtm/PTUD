@@ -9,6 +9,11 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
 
+import DAO.Account_DAO;
+import DAO.NhanVien_DAO;
+import Entity.Account;
+import Entity.NhanVien;
+
 import java.awt.FlowLayout;
 import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
@@ -18,6 +23,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -177,35 +183,26 @@ public class Login extends JFrame {
 
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				LoginInfo loginInfo = new LoginInfo();
-				String loginRole;
-				// Lấy dữ liệu từ các trường nhập liệu
 				String username = txtUser.getText();
 				String password = new String(passwordField.getPassword());
-				// Kiểm tra dữ liệu đăng nhập
-				// Ví dụ: kiểm tra username và password có hợp lệ hay không
-				if (username.equals("admin") && password.equals("12345")) {
-					loginInfo.setLoginRole("admin");
-//					ViewKhachHang viewKH = new ViewKhachHang(loginInfo);
-//					viewKH.setLocationRelativeTo(null);
-//					viewKH.setVisible(true);
-					ViewSanPham sp = new ViewSanPham();
-		    		sp.setLocationRelativeTo(null);
-		    		sp.setVisible(true);
-				} else if (username.equals("nv") && password.equals("12345")) {
-					loginInfo.setLoginRole("nv");
-//					ViewKhachHang viewKH = new ViewKhachHang(loginInfo);
-//					viewKH.setLocationRelativeTo(null);
-//					viewKH.setVisible(true);
-					ViewSanPham sp = new ViewSanPham();
-		    		sp.setLocationRelativeTo(null);
-		    		sp.setVisible(true);
-				}
-				if (!(username.equals("admin") && password.equals("12345"))
-						&& !(username.equals("nv") && password.equals("12345"))) {
-					JOptionPane.showMessageDialog(contentPane,
-							"Tên đăng nhập hoặc mật khẩu không đúng hoặc bạn không có quyền truy cập.", "Lỗi đăng nhập",
-							JOptionPane.ERROR_MESSAGE);
+				Account_DAO accDao = new Account_DAO();
+				List<Account> accountList = accDao.getAllAccount();
+				for (Account account : accountList) {
+					if (username.equals(account.getUserName()) && password.equals(account.getPassword())) {
+						String loginRole = account.getRole();
+						if ("nv".equals(loginRole)) {
+							ViewSanPham sp = new ViewSanPham();
+							sp.setLocationRelativeTo(null);
+							sp.setVisible(true);
+							dispose();
+						}
+						if ("admin".equals(loginRole)) {
+							ViewSanPham sp = new ViewSanPham();
+							sp.setLocationRelativeTo(null);
+							sp.setVisible(true);
+							dispose();
+						}
+					}
 				}
 			}
 		});

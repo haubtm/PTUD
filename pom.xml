@@ -9,6 +9,16 @@
 		<artifactId>swingx</artifactId>             
 		<version>1.6.1</version>         
 	</dependency>
+	<dependency>
+      <groupId>org.jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+      <version>1.5.3</version>
+    </dependency>
+	<dependency>
+		<groupId>PTUD</groupId>
+		<artifactId>PTUD</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency>
   </dependencies>
   
 </project>

@@ -9,6 +9,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
+import Entity.KhachHang;
+
 import javax.swing.JToolBar;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
@@ -58,7 +60,7 @@ public class ViewSanPham extends JFrame {
 	private JPanel contentPane;
 	public ViewKhachHang viewKhachHang;
 	private Color colorMenu = new Color(27, 64, 31);
-	
+	private KhachHang sanPham;
 	private JTextField textField;
 	private JTextField textField_1;
 
@@ -221,6 +223,7 @@ public class ViewSanPham extends JFrame {
 		btnThemSanPham.setBounds(21, 10, 85, 52);
 		pnlSapXep.add(btnThemSanPham);
 		btnThemSanPham.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 // Khi nút được nhấn, tạo và hiển thị form mới (OtherFrame)
                ViewThemSanPham viewThemSanPham = new ViewThemSanPham();
@@ -288,7 +291,6 @@ public class ViewSanPham extends JFrame {
 		JPanel panel = new JPanel();
 		tabbedNhanVien.addTab("Thống kê", null, panel, null);
 		
-
 		
 		 for (int i = 0; i < 20; i++) {
 	            JPanel taoDanhSachSP = taoDanhSachSP("Product " + i, "Price " + (i * 1000), ".\\IMG\\ao trang.jpg");
@@ -390,6 +392,7 @@ public class ViewSanPham extends JFrame {
         btnXemSanPham.setFont(new Font("Tahoma", Font.PLAIN, 10));
         btnXemSanPham.setBackground(Color.GREEN);
         btnXemSanPham.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 // Khi nút được nhấn, tạo và hiển thị form mới (OtherFrame)
                ViewXemSanPham viewXemSanPham = new ViewXemSanPham();
@@ -410,6 +413,7 @@ public class ViewSanPham extends JFrame {
         btnSuaSanPham.setPreferredSize(btnXemSanPham.getPreferredSize());
         buttonPanel.add(Box.createVerticalStrut(10));
         btnSuaSanPham.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 // Khi nút được nhấn, tạo và hiển thị form mới (OtherFrame)
                ViewSuaSanPham viewSuaSanPham = new ViewSuaSanPham();
