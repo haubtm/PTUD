@@ -188,6 +188,7 @@ public class HoaDon_Dao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        System.out.println("hóa đơn"+list_hd);
         return list_hd;
     }
     

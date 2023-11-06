@@ -27,6 +27,15 @@ public class NhanVien {
 		this.chucVu = chucVu;
 		this.hinhAnh = hinhAnh;
 	}
+	
+	
+
+	public NhanVien() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
 
 	public String getMaNhanVien() {
 		return maNhanVien;
