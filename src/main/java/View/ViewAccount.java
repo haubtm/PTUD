@@ -7,7 +7,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-
 import DAO.Account_DAO;
 import DAO.NhanVien_DAO;
 import Entity.Account;
@@ -178,19 +177,19 @@ public class ViewAccount extends JFrame {
 		txtPass.setEditable(false);
 		txtPass.setBounds(410, 248, 187, 20);
 		contentPane.add(txtPass);
-		
+
 		JLabel lblChucVu = new JLabel("Chức vụ");
 		lblChucVu.setForeground(new Color(0, 153, 51));
 		lblChucVu.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblChucVu.setBounds(282, 186, 103, 14);
 		contentPane.add(lblChucVu);
-		
+
 		txtChucVu = new JTextField();
 		txtChucVu.setEditable(false);
 		txtChucVu.setColumns(10);
 		txtChucVu.setBounds(410, 182, 187, 20);
 		contentPane.add(txtChucVu);
-		
+
 		final JButton btnXacNhan = new JButton("Xác nhận");
 		btnXacNhan.setBounds(488, 327, 109, 38);
 		contentPane.add(btnXacNhan);
@@ -200,6 +199,21 @@ public class ViewAccount extends JFrame {
 		btnSua.setBounds(282, 327, 109, 38);
 		contentPane.add(btnSua);
 
+		JLabel lblRole = new JLabel("Quyền hạn");
+		lblRole.setForeground(new Color(255, 51, 102));
+		lblRole.setFont(new Font("Tahoma", Font.BOLD, 12));
+		lblRole.setBounds(282, 285, 103, 20);
+		contentPane.add(lblRole);
+		
+		final JComboBox cbxRole = new JComboBox();
+		String[] filter = { "nv", "admin" };
+		for (String choice : filter) {
+			cbxRole.addItem(choice);
+		}
+		
+		cbxRole.setBounds(410, 283, 187, 20);
+		contentPane.add(cbxRole);
+
 		// sửa account
 		btnSua.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -208,34 +222,35 @@ public class ViewAccount extends JFrame {
 				txtPass.setEditable(true);
 			}
 		});
-		
-		// btn xác nhận  thông tin sửa
+
+		// btn xác nhận thông tin sửa
 		btnXacNhan.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		    	String accountID = txtMaAccount.getText();
-		        String userName = txtUserName.getText();
-		        String matKhau = txtPass.getText();	
-		        String chucVu = txtChucVu.getText();
-		        String maNhanVien = txtMaNV.getText();
-		        if(userName.equals("") || matKhau.equals("")) {
-		            JOptionPane.showMessageDialog(null, "Không được để trống");
-		        } else {
-		            Account accToUpdate = new Account(accountID, userName, matKhau, chucVu, maNhanVien);
-		            Account_DAO accDao = new Account_DAO();
-		            accDao.updateAccount(accToUpdate);
-		            JOptionPane.showMessageDialog(null, "Cập nhật tài khoản thành công");
-		            txtUserName.setEditable(false);
-		            txtPass.setEditable(false);
-		        }
-		    }
+			public void actionPerformed(ActionEvent e) {
+				String accountID = txtMaAccount.getText();
+				String userName = txtUserName.getText();
+				String matKhau = txtPass.getText();
+				String maNhanVien = txtMaNV.getText();
+				String role = cbxRole.getSelectedItem().toString();
+
+				if (userName.equals("") || matKhau.equals("")) {
+					JOptionPane.showMessageDialog(null, "Không được để trống");
+				} else {
+					Account accToUpdate = new Account(accountID, userName, matKhau, role, maNhanVien);
+					Account_DAO accDao = new Account_DAO();
+					accDao.updateAccount(accToUpdate);
+					JOptionPane.showMessageDialog(null, "Cập nhật tài khoản thành công");
+					txtUserName.setEditable(false);
+					txtPass.setEditable(false);
+				}
+			}
+
 		});
 
 	}
 
-	public void setDataForAccount(String maNV, String hoTen,String role) {
+	public void setDataForAccount(String maNV, String hoTen) {
 		txtMaNV.setText(maNV);
 		txtName.setText(hoTen);
-		txtChucVu.setText(role);
 
 		Account_DAO acc_dao = new Account_DAO();
 		List<Account> taiKhoan = acc_dao.getAllAccount();
@@ -245,8 +260,15 @@ public class ViewAccount extends JFrame {
 				txtMaAccount.setText(account.getAccountID());
 				txtUserName.setText(account.getUserName());
 				txtPass.setText(account.getPassword());
+				if(account.getRole().equalsIgnoreCase("nv")) {
+					txtChucVu.setText("Nhân viên bán hàng");
+				}else if(account.getRole().equalsIgnoreCase("admin")) {
+					txtChucVu.setText("Nhân viên quản lí");
+				} else {
+				    txtChucVu.setText(account.getRole()); 
+				}
 				break; // Đã tìm thấy và thoát khỏi vòng lặp
 			}
+			}
 		}
-	}
 }

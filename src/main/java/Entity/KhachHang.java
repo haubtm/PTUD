@@ -8,6 +8,7 @@ public class KhachHang {
 	private String soDienThoai;
 	private boolean gioiTinh;
 	private String diaChi;
+
 	public String getMaKhachHang() {
 		return maKhachHang;
 	}
@@ -74,6 +75,11 @@ public class KhachHang {
 		return "KhachHang [maKhachHang=" + maKhachHang + ", hoTen=" + hoTen + ", soDienThoai=" + soDienThoai
 				+ ", gioiTinh=" + gioiTinh + ", diaChi=" + diaChi + "]";
 	}
+	public int getSoHoaDon() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	
 	
 }

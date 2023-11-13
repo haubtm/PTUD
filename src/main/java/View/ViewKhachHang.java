@@ -57,7 +57,9 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.awt.event.ActionEvent;
 import javax.swing.ImageIcon;
@@ -66,12 +68,22 @@ import javax.swing.JScrollPane;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import connectDB.ConnectDB;
 import DAO.KhachHang_DAO;
+import DAO.ThongKeKhachHang_DAO;
+import Entity.DataThongKeKHTheoNam;
+import Entity.DataThongKeKHTheoNgay;
+import Entity.DataThongKeKHTheoThang;
+import Entity.DataThongKeNhanVienNam;
+import Entity.DataThongKeNhanVienThang;
 import Entity.KhachHang;
+import Entity.NhanVien;
 
 public class ViewKhachHang extends JFrame {
 
@@ -85,6 +97,8 @@ public class ViewKhachHang extends JFrame {
 	private JTextField txtAddress;
 	private JTable table;
 	private DefaultTableModel model;
+	private JTable tableTK;
+	private DefaultTableModel modelTK;
 	private static int count = 1;
 
 	/**
@@ -237,6 +251,7 @@ public class ViewKhachHang extends JFrame {
 		panel.setLayout(null);
 
 		// tab menu thống kê
+		// //////////////////////////////////////////////////////////////////
 		JTabbedPane tabbedPane2 = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(201, 91, 983, 658);
 		contentPane.add(tabbedPane);
@@ -244,27 +259,21 @@ public class ViewKhachHang extends JFrame {
 		tabbedPane.addTab("Thống kê", null, panel_thongKe, null);
 		panel_thongKe.setLayout(null);
 
-		// combobox
-		JComboBox cbx_TK = new JComboBox();
-		String choiceTK[] = { "Thống kê theo", "Ngày", "Tháng", "Năm" };
-		for (String cbx : choiceTK) {
-			cbx_TK.addItem(cbx);
-		}
-		cbx_TK.setBounds(29, 24, 151, 22);
-		panel_thongKe.add(cbx_TK);
-
-		JLabel lblSoLuongKH = new JLabel("Chọn số lượng khách hàng");
-		lblSoLuongKH.setBounds(29, 75, 182, 22);
+		JLabel lblSoLuongKH = new JLabel("Chọn số lượng cần lọc: ");
+		lblSoLuongKH.setFont(new Font("Tahoma", Font.BOLD, 12));
+		lblSoLuongKH.setBounds(34, 75, 182, 22);
 		panel_thongKe.add(lblSoLuongKH);
 
-		txtSoLuongKH = new JTextField();
-		txtSoLuongKH.setBounds(221, 76, 103, 20);
-		panel_thongKe.add(txtSoLuongKH);
-		txtSoLuongKH.setColumns(10);
+		final JComboBox cbxChoose = new JComboBox();
+		cbxChoose.setBounds(221, 77, 56, 20);
+		for (int i = 1; i < 11; i++) {
+			cbxChoose.addItem(i);
+		}
+		panel_thongKe.add(cbxChoose);
 
 		JButton btnThongKe = new JButton("Thống kê");
 		btnThongKe.setBackground(new Color(0, 255, 0));
-		btnThongKe.setBounds(462, 75, 89, 23);
+		btnThongKe.setBounds(429, 76, 89, 23);
 		panel_thongKe.add(btnThongKe);
 
 		JButton btnXuatTK = new JButton("Xuất thống kê");
@@ -272,36 +281,11 @@ public class ViewKhachHang extends JFrame {
 		btnXuatTK.setBounds(813, 24, 127, 32);
 		panel_thongKe.add(btnXuatTK);
 
-		// chart của thống kê khách hàng
-
-		JPanel panel_chart = new JPanel();
-		panel_chart.setBounds(515, 128, 453, 374);
-		panel_thongKe.add(panel_chart);
-
-		// Tạo bộ dữ liệu cho biểu đồ
-		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-		dataset.addValue(10, "Category 1", "Value 1");
-		dataset.addValue(20, "Category 2", "Value 2");
-		dataset.addValue(15, "Category 3", "Value 3");
-
-		// Tạo biểu đồ
-		JFreeChart chart = ChartFactory.createBarChart("Biểu đồ Hình Khối", "Danh mục", "Giá trị", dataset,
-				PlotOrientation.VERTICAL, true, true, false);
-
-		// Tạo một ChartPanel để hiển thị biểu đồ
-		ChartPanel chartPanel = new ChartPanel(chart);
-
-		// Thêm ChartPanel vào panel_Chart
-		panel_chart.add(chartPanel);
-
 		// table thống kê khách hàng
-		String rowTK[] = { "Mã Nhân Viên", "Tên Nhân Viên", "Hóa đơn đã lập" };
-		model = new DefaultTableModel(rowTK, 0);
-		String row1TK[] = { "NV001", "Dũng", "34" };
-		model.addRow(row1TK);
-
+		String rowTK[] = { "Mã Khách Hàng", "Tên Khách Hàng ", "Sản phẩm đã mua", "Giới tính"};
+		modelTK = new DefaultTableModel(rowTK, 0);
 		// xét màu cho hàng
-		table = new JTable(model) {
+		tableTK = new JTable(modelTK) {
 			@Override
 			public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
 				Component component = super.prepareRenderer(renderer, row, column);
@@ -313,14 +297,157 @@ public class ViewKhachHang extends JFrame {
 			}
 		};
 
-		JScrollPane scrollPane1 = new JScrollPane(table);
-		scrollPane1.setBounds(34, 134, 453, 368);
+		JScrollPane scrollPane1 = new JScrollPane(tableTK);
+		scrollPane1.setBounds(10, 110, 442, 426);
 		panel_thongKe.add(scrollPane1);
 
-		JLabel lblNewLabel_3 = new JLabel("Danh sách khách hàng có tổng tiền cao nhất");
+		JLabel lblNewLabel_3 = new JLabel("Danh sách khách hàng có nhiều hóa đơn nhất");
 		lblNewLabel_3.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblNewLabel_3.setBounds(95, 540, 357, 22);
 		panel_thongKe.add(lblNewLabel_3);
+
+		JLabel txtThongKe = new JLabel("Thống kê theo");
+		txtThongKe.setFont(new Font("Tahoma", Font.BOLD, 12));
+		txtThongKe.setBounds(34, 31, 110, 19);
+		panel_thongKe.add(txtThongKe);
+
+		JLabel lblNgay = new JLabel("Ngày");
+		lblNgay.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblNgay.setBounds(177, 30, 42, 19);
+		panel_thongKe.add(lblNgay);
+
+		final JComboBox cbxNgay = new JComboBox();
+		for (int i = 0; i < 32; i++) {
+			cbxNgay.addItem(i);
+		}
+		cbxNgay.setBounds(221, 30, 56, 20);
+		panel_thongKe.add(cbxNgay);
+
+		JLabel lblThang = new JLabel("Tháng");
+		lblThang.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblThang.setBounds(283, 30, 56, 19);
+		panel_thongKe.add(lblThang);
+
+		final JComboBox cbxThang = new JComboBox();
+		for (int i = 0; i < 13; i++) {
+			cbxThang.addItem(i);
+		}
+		cbxThang.setBounds(338, 30, 56, 20);
+		panel_thongKe.add(cbxThang);
+
+		JLabel lblNam = new JLabel("Năm");
+		lblNam.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblNam.setBounds(404, 30, 42, 19);
+		panel_thongKe.add(lblNam);
+
+		final JComboBox cbxNam = new JComboBox();
+		for (int i = 2000; i < 2025; i++) {
+			cbxNam.addItem(i);
+		}
+		cbxNam.setBounds(450, 30, 68, 20);
+		panel_thongKe.add(cbxNam);
+
+		// biểu đồ
+		final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		final JFreeChart chart = ChartFactory.createBarChart("Biểu đồ Hình Khối", "Danh mục", "Phần trăm", dataset,
+				PlotOrientation.VERTICAL, true, true, false);
+		final ChartPanel chartPanel = new ChartPanel(chart);
+		
+		chartPanel.setBounds(455, 110, 513, 426);
+		panel_thongKe.add(chartPanel);
+		chartPanel.setPreferredSize(new java.awt.Dimension(500, 370));
+
+
+		btnThongKe.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int nam = (int) cbxNam.getSelectedItem();
+				int thang = (int) cbxThang.getSelectedItem();
+				int ngay = (int) cbxNgay.getSelectedItem();
+				int luaChon = (int) cbxChoose.getSelectedItem();
+				ThongKeKhachHang_DAO thongKe = new ThongKeKhachHang_DAO();
+				modelTK.setRowCount(0);
+				dataset.clear(); // Xóa dữ liệu cũ trong dataset
+				int soLuongCucBo = 0;
+				if (ngay != 0 && thang != 0 && luaChon != 0) {
+					
+					DataThongKeKHTheoNgay thongTinNgay = thongKe.getKhachHangNhieuHoaDonNhatTheoNgay(nam, thang, ngay,
+							soLuongCucBo,luaChon);
+					List<KhachHang> danhSachKhachHang1 = thongTinNgay.getDanhSachKhachHang();
+					for (KhachHang khachHang : danhSachKhachHang1) {
+						int index = danhSachKhachHang1.indexOf(khachHang);
+						int soLuongHoaDon = thongTinNgay.getSoLuongHoaDon(index);
+						String tenKhachHang = thongKe.getTenKhachHangFromMaKhachHang(khachHang.getMaKhachHang());
+						String chuyenDoiGT = "";
+						if (khachHang.isGioiTinh() == false) {
+							chuyenDoiGT = "Nam";
+						} else {
+							chuyenDoiGT = "Nữ";
+						}
+						modelTK.addRow(
+								new Object[] { khachHang.getMaKhachHang(), tenKhachHang, soLuongHoaDon, chuyenDoiGT });
+						
+						double tyLePhanTram = ((double) soLuongHoaDon / 1000) * 100;
+						dataset.addValue(tyLePhanTram, "Khách hàng", tenKhachHang);
+					}
+					chartPanel.setChart(chart);
+					chartPanel.repaint();
+					chart.fireChartChanged();
+				} else if (ngay == 0 && thang != 0 && luaChon != 0) {
+					DataThongKeKHTheoThang thongTinThang = thongKe.getKhachHangNhieuHoaDonNhatTheoThang(nam, thang,
+							soLuongCucBo,luaChon);
+					List<KhachHang> danhSachKhachHang1 = thongTinThang.getDanhSachKhachHang();
+
+					for (KhachHang khachHang : danhSachKhachHang1) {
+						int index = danhSachKhachHang1.indexOf(khachHang);
+						int soLuongHoaDon = thongTinThang.getSoLuongHoaDon(index);
+						String tenKhachHang = thongKe.getTenKhachHangFromMaKhachHang(khachHang.getMaKhachHang());
+						String chuyenDoiGT = "";
+						if (khachHang.isGioiTinh() == false) {
+							chuyenDoiGT = "Nam";
+						} else {
+							chuyenDoiGT = "Nữ";
+						}
+						modelTK.addRow(
+								new Object[] { khachHang.getMaKhachHang(), tenKhachHang, soLuongHoaDon, chuyenDoiGT });						
+						double tyLePhanTram = ((double) soLuongHoaDon / 1000) * 100;
+						dataset.addValue(tyLePhanTram, "Khách hàng", tenKhachHang);
+					}
+					chartPanel.setChart(chart);
+					chartPanel.repaint();
+					chart.fireChartChanged();
+				} else if (ngay == 0 && thang == 0 && luaChon != 0) {
+					DataThongKeKHTheoNam thongTinNam = thongKe.getSoLuongHoaDonKhachHangTheoNam(nam, soLuongCucBo,luaChon);
+					List<KhachHang> danhSachKhachHang1 = thongTinNam.getDanhSachKhachHang();
+					
+					for (KhachHang khachHang : danhSachKhachHang1) {
+						int index = danhSachKhachHang1.indexOf(khachHang);
+						int soLuongHoaDon = thongTinNam.getSoLuongHoaDon(index);
+						String tenKhachHang = thongKe.getTenKhachHangFromMaKhachHang(khachHang.getMaKhachHang());
+						String chuyenDoiGT = "";
+						if (khachHang.isGioiTinh() == false) {
+							chuyenDoiGT = "Nam";
+						} else {
+							chuyenDoiGT = "Nữ";
+						}
+						modelTK.addRow(
+								new Object[] { khachHang.getMaKhachHang(), tenKhachHang, soLuongHoaDon, chuyenDoiGT });
+						
+						String tenKhachHangTK = thongKe.getTenKhachHangFromMaKhachHang(khachHang.getMaKhachHang());
+						
+						   // Vẽ biểu đồ ngay sau khi thêm dữ liệu vào bảng
+					    double tyLePhanTram = ((double) soLuongHoaDon / 1000) * 100;
+					    dataset.addValue(tyLePhanTram, "Khách hàng", tenKhachHangTK);
+					}
+					chartPanel.setChart(chart);
+					chartPanel.repaint();
+					chart.fireChartChanged();
+				} else {
+					JOptionPane.showMessageDialog(null, "RỖng");
+				}
+			}
+		});
+
+		/////////////////////////////////////////////////////////////////////
 
 		/// các filter lọc củ khách hàng
 		JLabel lblFilter = new JLabel("Lọc");
@@ -375,7 +502,7 @@ public class ViewKhachHang extends JFrame {
 		// phần add khách hàng
 		JPanel panel_KH = new JPanel();
 		panel_KH.setLayout(null);
-		panel_KH.setBounds(604, 86, 364, 499);
+		panel_KH.setBounds(604, 86, 364, 454);
 		Border borderKH = BorderFactory.createLineBorder(java.awt.Color.BLACK, 3);
 		panel_KH.setBorder(borderKH);
 		panel.add(panel_KH);
@@ -441,7 +568,7 @@ public class ViewKhachHang extends JFrame {
 		txtAddress.setBounds(131, 224, 204, 20);
 		panel_KH.add(txtAddress);
 
-		JButton btnSua = new JButton("Sửa");
+		final JButton btnSua = new JButton("Sửa");
 		btnSua.setForeground(new Color(255, 255, 255));
 //		btnSua.setContentAreaFilled(false);
 		btnSua.setBackground(new Color(255, 105, 180));
@@ -474,12 +601,11 @@ public class ViewKhachHang extends JFrame {
 
 		final JButton btnXacNhan = new JButton("Xác nhận");
 		btnXacNhan.setBackground(new Color(102, 205, 170));
-		btnXacNhan.setForeground(new Color(255, 255, 255));
+		btnXacNhan.setForeground(Color.WHITE);
 		btnXacNhan.setBounds(41, 365, 99, 40);
 		panel_KH.add(btnXacNhan);
-
 		// table
-		String row[] = { "Mã Khách Hàng", "Họ Tên", "SDT", "Địa chỉ", "Giới tính" };
+		String row[] = { "Mã Khách Hàng", "Họ Tên", "SDT", "Địa chỉ", "Giới tính" ,"Email"};
 		model = new DefaultTableModel(row, 0);
 		// xét màu cho hàng
 		table = new JTable(model) {
@@ -508,7 +634,7 @@ public class ViewKhachHang extends JFrame {
 		}
 
 		final JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBounds(0, 86, 594, 499);
+		scrollPane.setBounds(0, 86, 594, 454);
 		panel.add(scrollPane);
 
 		// click vào bảng cập nhật dữ liệu lên text
@@ -538,6 +664,7 @@ public class ViewKhachHang extends JFrame {
 					} else if (gioiTinh.equals("Nữ")) {
 						rdbtnFemale.setSelected(true);
 					}
+					  btnSua.setEnabled(true);
 				} else if (!isRowSelected) {
 					table.clearSelection();
 					// Xóa dữ liệu từ các trường nhập và radio button
@@ -564,7 +691,6 @@ public class ViewKhachHang extends JFrame {
 					gioiTinh = false;
 				}
 				String diaChi = txtAddress.getText().trim();
-				System.out.println("tên kh: " + hoTen);
 				if (txtMaKhachHang.getText().equalsIgnoreCase("") || txtName.getText().equalsIgnoreCase("")
 						|| txtPhone.getText().equalsIgnoreCase("") || txtAddress.getText().equalsIgnoreCase("")) {
 					JOptionPane.showMessageDialog(null, "Chưa nhập đủ dữ liệu");
@@ -573,10 +699,10 @@ public class ViewKhachHang extends JFrame {
 					if (!soDienThoai.matches("^[0-9]+$")) {
 						JOptionPane.showMessageDialog(null, "Số điện thoại chỉ được chứa số.");
 					}
-					 if (!diaChi.matches("^[a-zA-Z0-9 ]+$")) {
+					if (!diaChi.matches("^[a-zA-Z0-9 ]+$")) {
 						JOptionPane.showMessageDialog(null, "Địa chỉ chỉ được chứa chữ cái và số.");
-					} 
-					 if(hoTen.matches("^[a-zA-Z]+$")) {
+					}
+					if (hoTen.matches("^[a-zA-Z]+$")) {
 						KhachHang newKhachHang = new KhachHang(maKhachHang, hoTen, soDienThoai, gioiTinh, diaChi);
 						khachHangDAO.addKhachHang(newKhachHang);
 						DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -623,8 +749,10 @@ public class ViewKhachHang extends JFrame {
 		});
 
 		// nút sửa
+		btnSua.setEnabled(false); 
 		btnSua.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+			    btnXacNhan.setEnabled(true);
 				btnXacNhan.setEnabled(true);
 				txtName.setEditable(true);
 				txtPhone.setEditable(true);
@@ -636,6 +764,16 @@ public class ViewKhachHang extends JFrame {
 
 		// nút xác nhận sửa khách hàng
 		btnXacNhan.setEnabled(false);
+		
+		JLabel lblEmail = new JLabel("Email");
+		lblEmail.setBounds(31, 258, 89, 14);
+		panel_KH.add(lblEmail);
+		
+		txtEmail = new JTextField();
+		txtEmail.setEditable(false);
+		txtEmail.setColumns(10);
+		txtEmail.setBounds(131, 255, 204, 20);
+		panel_KH.add(txtEmail);
 		btnXacNhan.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Lấy dữ liệu từ các trường trên giao diện
@@ -780,6 +918,10 @@ public class ViewKhachHang extends JFrame {
 	private JTextField txtSoLuongKH;
 	private JTable table_1;
 	private JTextField txtMaKhachHang;
+	private JTextField txtNgay;
+	private JTextField txtThang;
+	private JTextField txtNam;
+	private JTextField txtEmail;
 
 	static String hamTang() {
 		for (int i = 1; i <= 1000; i++) {

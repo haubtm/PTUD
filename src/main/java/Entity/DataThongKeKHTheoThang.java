@@ -2,22 +2,22 @@ package Entity;
 
 import java.util.List;
 
-public class DataThongKeNhanVienNam {
-
-	private List<NhanVien> danhSachNhanVien;
-	private int tongSoHoaDon;
+public class DataThongKeKHTheoThang {
+	private List<KhachHang> danhSachKhachHang;
 	public List<Integer> getDanhSachSoHoaDon() {
 		return danhSachSoHoaDon;
 	}
 	public void setDanhSachSoHoaDon(List<Integer> danhSachSoHoaDon) {
 		this.danhSachSoHoaDon = danhSachSoHoaDon;
 	}
+	private int tongSoHoaDon;
 	private List<Integer> danhSachSoHoaDon;
-	public List<NhanVien> getDanhSachNhanVien() {
-		return danhSachNhanVien;
+	
+	public List<KhachHang> getDanhSachKhachHang() {
+		return danhSachKhachHang;
 	}
-	public void setDanhSachNhanVien(List<NhanVien> danhSachNhanVien) {
-		this.danhSachNhanVien = danhSachNhanVien;
+	public void setDanhSachKhachHang(List<KhachHang> danhSachKhachHang) {
+		this.danhSachKhachHang = danhSachKhachHang;
 	}
 	public int getTongSoHoaDon() {
 		return tongSoHoaDon;
@@ -25,19 +25,15 @@ public class DataThongKeNhanVienNam {
 	public void setTongSoHoaDon(int tongSoHoaDon) {
 		this.tongSoHoaDon = tongSoHoaDon;
 	}
-	public DataThongKeNhanVienNam(List<NhanVien> danhSachNhanVien, int tongSoHoaDon,List<Integer> danhSachSoHoaDon) {
+	public DataThongKeKHTheoThang(List<KhachHang> danhSachKhachHang, int tongSoHoaDon,List<Integer> danhSachSoHoaDon) {
 		super();
-		this.danhSachNhanVien = danhSachNhanVien;
+		this.danhSachKhachHang = danhSachKhachHang;
 		this.tongSoHoaDon = tongSoHoaDon;
 		this.danhSachSoHoaDon = danhSachSoHoaDon;
 	}
-	public DataThongKeNhanVienNam() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 	@Override
 	public String toString() {
-		return "DataThongKeNhanVienNam [danhSachNhanVien=" + danhSachNhanVien + ", tongSoHoaDon=" + tongSoHoaDon + "]";
+		return "DataThongKeKHTheoNgay [danhSachKhachHang=" + danhSachKhachHang + ", tongSoHoaDon=" + tongSoHoaDon + "]";
 	}
 	
 	// đánh index 

@@ -78,6 +78,7 @@ public class ViewNhanVien1 extends JFrame {
 	private JTextField txtDiaChi;
 	private JTextField txtSDT;
 	private JTextField txtCanCuoc;
+	private JTextField txtSoLuong;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -306,19 +307,27 @@ public class ViewNhanVien1 extends JFrame {
 			cbxNgay.addItem(i);
 		}
 		panelNgay.add(cbxNgay);
+		
+		// so lượng
+		JLabel lblSoLuong = new JLabel("Số lượng");
+		lblSoLuong.setBounds(708, 72, 83, 21);
+		panel_thongKe.add(lblSoLuong);
+		
+		final JComboBox cbxSoLuong = new JComboBox();
+		for (int i = 1; i < 11; i++) {
+			cbxSoLuong.addItem(i);
+		}
+		cbxSoLuong.setBounds(801, 73, 96, 20);
+		panel_thongKe.add(cbxSoLuong);
 
 		// biểu đồ
 
 		final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		final JFreeChart chart = ChartFactory.createBarChart("Biểu đồ Hình Khối", "Danh mục", "Phần trăm", dataset,
 				PlotOrientation.VERTICAL, true, true, false);
-		CategoryPlot plot = (CategoryPlot) chart.getPlot();
-		// Tạo trục Y và đặt giới hạn từ 0% đến 100% với khoảng cách 10%
-		NumberAxis yAxis = new NumberAxis("Phần trăm");
-		yAxis.setRange(0, 100);
-		yAxis.setTickUnit(new NumberTickUnit(10));
-
 		final ChartPanel chartPanel = new ChartPanel(chart);
+		chartPanel.setPreferredSize(new java.awt.Dimension(500, 370));
+		
 
 		// xuất theo năm
 
@@ -327,6 +336,7 @@ public class ViewNhanVien1 extends JFrame {
 				int nam = (int) cbxNam.getSelectedItem();
 				int thang = (int) cbxThang.getSelectedItem();
 				int ngay = (int) cbxNgay.getSelectedItem();
+				int soLuong = (int) cbxSoLuong.getSelectedItem();
 				ThongKeNhanVien_DAO thongKe = new ThongKeNhanVien_DAO();
 				model.setRowCount(0); // Xóa dữ liệu cũ trong bảng
 				dataset.clear(); // Xóa dữ liệu cũ trong dataset
@@ -334,11 +344,12 @@ public class ViewNhanVien1 extends JFrame {
 				// tìm số lượng hóa đơn theo ngày tháng năm
 				if (ngay != 0 && thang != 0) {
 					DataThongKeNhanVien thongTinNgay = thongKe.getNhanVienNhieuHoaDonNhatTheoNgay(nam, thang, ngay,
-							soLuongCucBo);
+							soLuongCucBo,soLuong);
 					List<NhanVien> danhSachNhanVien1 = thongTinNgay.getDanhSachNhanVien();
-					int soLuongHoaDon = thongTinNgay.getTongSoHoaDon();
 
 					for (NhanVien nhanVien : danhSachNhanVien1) {
+						int index = danhSachNhanVien1.indexOf(nhanVien);
+						int soLuongHoaDon = thongTinNgay.getSoLuongHoaDon(index);
 						String tenNhanVien = thongKe.getTenNhanVienFromMaNhanVien(nhanVien.getMaNhanVien());
 						String chuyenDoiGT = "";
 						if (nhanVien.isGioiTinh() == false) {
@@ -348,22 +359,40 @@ public class ViewNhanVien1 extends JFrame {
 						}
 						model.addRow(
 								new Object[] { nhanVien.getMaNhanVien(), tenNhanVien, soLuongHoaDon, chuyenDoiGT });
-					}
-					for (NhanVien nhanVien : danhSachNhanVien1) {
-						soLuongCucBo = thongKe.getSoLuongHoaDonTheoNam1(nhanVien.getMaNhanVien(), nam);
-						String tenNhanVien = thongKe.getTenNhanVienFromMaNhanVien(nhanVien.getMaNhanVien());
 						double tyLePhanTram = ((double) soLuongHoaDon / 1000) * 100;
 						dataset.addValue(tyLePhanTram, "Nhân viên", tenNhanVien);
 					}
 					chartPanel.setChart(chart);
 					chartPanel.repaint();
-				} else if (ngay == 0 & thang != 0) {
+				} else if (ngay == 0 & thang != 0 && soLuong != 0) {
 					DataThongKeNhanVienThang thongTinThang = thongKe.getNhanVienNhieuHoaDonNhatTheoThang(nam, thang,
-							soLuongCucBo);
+							soLuongCucBo,soLuong);
 					List<NhanVien> danhSachNhanVien1 = thongTinThang.getDanhSachNhanVien();
-					int soLuongHoaDon = thongTinThang.getTongSoHoaDon();
 
 					for (NhanVien nhanVien : danhSachNhanVien1) {
+						int index = danhSachNhanVien1.indexOf(nhanVien);
+						int soLuongHoaDon = thongTinThang.getSoLuongHoaDon(index);
+						String tenNhanVien = thongKe.getTenNhanVienFromMaNhanVien(nhanVien.getMaNhanVien());
+						String chuyenDoiGT = "";
+						if (nhanVien.isGioiTinh() == false) {
+							chuyenDoiGT = "Nam";
+						} else {
+							chuyenDoiGT = "Nữ";
+						}
+						model.addRow(
+						new Object[] { nhanVien.getMaNhanVien(), tenNhanVien, soLuongHoaDon, chuyenDoiGT });
+						double tyLePhanTram = ((double) soLuongHoaDon / 1000) * 100;
+						dataset.addValue(tyLePhanTram, "Nhân viên", tenNhanVien);
+					}
+					chartPanel.setChart(chart);
+					chartPanel.repaint();
+				} else if (ngay == 0 && thang == 0 && soLuong != 0) {
+					DataThongKeNhanVienNam thongTinNam = thongKe.getSoLuongHoaDonTheoNam(nam, soLuongCucBo,soLuong);
+					List<NhanVien> danhSachNhanVien1 = thongTinNam.getDanhSachNhanVien();
+
+					for (NhanVien nhanVien : danhSachNhanVien1) {
+						int index = danhSachNhanVien1.indexOf(nhanVien);
+						int soLuongHoaDon = thongTinNam.getSoLuongHoaDon(index);
 						String tenNhanVien = thongKe.getTenNhanVienFromMaNhanVien(nhanVien.getMaNhanVien());
 						String chuyenDoiGT = "";
 						if (nhanVien.isGioiTinh() == false) {
@@ -373,39 +402,12 @@ public class ViewNhanVien1 extends JFrame {
 						}
 						model.addRow(
 								new Object[] { nhanVien.getMaNhanVien(), tenNhanVien, soLuongHoaDon, chuyenDoiGT });
-					}
-					for (NhanVien nhanVien : danhSachNhanVien1) {
-						soLuongCucBo = thongKe.getSoLuongHoaDonTheoNam1(nhanVien.getMaNhanVien(), nam);
-						String tenNhanVien = thongKe.getTenNhanVienFromMaNhanVien(nhanVien.getMaNhanVien());
-						double tyLePhanTram = ((double) soLuongHoaDon / 1000) * 100;
+						
+						double tyLePhanTram = ((double) soLuongHoaDon / 1000) * 100 ;
 						dataset.addValue(tyLePhanTram, "Nhân viên", tenNhanVien);
 					}
 					chartPanel.setChart(chart);
 					chartPanel.repaint();
-				}else if(ngay == 0 && thang == 0) {
-					DataThongKeNhanVienNam thongTinNam = thongKe.getSoLuongHoaDonTheoNam(nam, soLuongCucBo);
-				    List<NhanVien> danhSachNhanVien1 = thongTinNam.getDanhSachNhanVien();
-				    int soLuongHoaDon = thongTinNam.getTongSoHoaDon();
-
-				    for (NhanVien nhanVien : danhSachNhanVien1) {
-				        String tenNhanVien = thongKe.getTenNhanVienFromMaNhanVien(nhanVien.getMaNhanVien());
-				        String chuyenDoiGT = "";
-				        if (nhanVien.isGioiTinh() == false) {
-				            chuyenDoiGT = "Nam";
-				        } else {
-				            chuyenDoiGT = "Nữ";
-				        }
-				        model.addRow(new Object[] { nhanVien.getMaNhanVien(), tenNhanVien, soLuongHoaDon, chuyenDoiGT });
-				    }
-				    
-				    for (NhanVien nhanVien : danhSachNhanVien1) {
-				        int soLuongCucBo1 = thongKe.getSoLuongHoaDonTheoNam1(nhanVien.getMaNhanVien(), nam);
-				        String tenNhanVien = thongKe.getTenNhanVienFromMaNhanVien(nhanVien.getMaNhanVien());
-				        double tyLePhanTram = ((double) soLuongHoaDon / 1000) * 100;
-				        dataset.addValue(tyLePhanTram, "Nhân viên", tenNhanVien);
-				    }
-				    chartPanel.setChart(chart);
-				    chartPanel.repaint();
 				}
 			}
 		});
@@ -419,6 +421,7 @@ public class ViewNhanVien1 extends JFrame {
 		panel_Chart.revalidate();
 		panel_Chart.repaint();
 		panel_Chart.add(chartPanel);
+		
 
 //				// title danh sách
 		JLabel lblNewLabel_3 = new JLabel("Bảng danh sách hóa đơn đã lập");
@@ -428,37 +431,27 @@ public class ViewNhanVien1 extends JFrame {
 		panel_thongKe.add(lblNewLabel_3);
 		panel_khachHang.setLayout(null);
 
-		//////////////////////////////////////////////////////////////////////// -----------------------------------/////////////////
-
-		// button them xoa sua
-		JButton btnAdd = new JButton("Thêm");
-		btnAdd.setBounds(21, 19, 100, 30);
-		btnAdd.setForeground(new Color(255, 255, 255));
-		btnAdd.setBackground(new Color(0, 128, 0));
-		panel_khachHang.add(btnAdd);
-
 		// chooose filter
 		final JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(224, 23, 154, 22);
+		comboBox.setBounds(164, 23, 154, 22);
 		panel_khachHang.add(comboBox);
 
 		JLabel lblLoc = new JLabel("Lọc");
-		lblLoc.setBounds(172, 27, 38, 14);
+		lblLoc.setBounds(92, 27, 38, 14);
 		panel_khachHang.add(lblLoc);
-		String[] filter = { "Lọc nhân viên", "Nhân viên quản lí", "Nhân viên part-time", "Nhân viên full-time" };
+		String[] filter = { "Lọc nhân viên", "Nhân viên quản lí", "Nhân viên bán hàng" };
 		for (String choice : filter) {
 			comboBox.addItem(choice);
 		}
 		// label tìm tên
 		JLabel lblFindName = new JLabel("Tìm theo tên");
-		lblFindName.setBounds(408, 26, 92, 14);
+		lblFindName.setBounds(381, 26, 92, 14);
 		lblFindName.setFont(new Font("Tahoma", Font.BOLD, 12));
 		panel_khachHang.add(lblFindName);
 
 		txtTimTen = new JTextField();
-		txtTimTen.setBounds(510, 25, 146, 20);
+		txtTimTen.setBounds(483, 25, 146, 20);
 		txtTimTen.setColumns(10);
-
 		txtTimTen.setBackground(null);
 		Border border = txtTimTen.getBorder();
 		Border newBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.green);
@@ -494,7 +487,7 @@ public class ViewNhanVien1 extends JFrame {
 		btnXoa.setBounds(827, 47, 89, 31);
 		panel_NhapTT.add(btnXoa);
 
-		JButton btnSua = new JButton("Sửa");
+		final JButton btnSua = new JButton("Sửa");
 		btnSua.setBounds(827, 85, 89, 31);
 		panel_NhapTT.add(btnSua);
 
@@ -529,7 +522,7 @@ public class ViewNhanVien1 extends JFrame {
 		final JComboBox chucVu = new JComboBox();
 		chucVu.setBounds(172, 90, 150, 20);
 		panel_NhapTT.add(chucVu);
-		String[] cv = { "Nhân viên quản lí", "Nhân viên part-time", "Nhân viên full-time" };
+		String[] cv = { "Nhân viên quản lí", "Nhân viên bán hàng" };
 		for (String choice : cv) {
 			chucVu.addItem(choice);
 		}
@@ -635,9 +628,9 @@ public class ViewNhanVien1 extends JFrame {
 		lblTitle.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblTitle.setBounds(411, 15, 328, 35);
 		panel_thongKe.add(lblTitle);
+		
 
-		String[] columnNames = { "Mã NV", "Tên NV", "Ngày sinh", "Giới tính", "Căn cước", "SDT", "Địa chỉ", "Chức vụ",
-				"Hình ảnh" };
+		String[] columnNames = { "Mã NV", "Tên NV", "Ngày sinh", "Giới tính", "Căn cước", "SDT", "Địa chỉ", "Chức vụ" };
 		final DefaultTableModel modelNV = new DefaultTableModel(columnNames, 0);
 		table = new JTable(modelNV) {
 			@Override
@@ -670,7 +663,7 @@ public class ViewNhanVien1 extends JFrame {
 		newScrollPane.setBounds(10, 255, 938, 299);
 		panel_khachHang.add(newScrollPane);
 
-		JButton btnXemAccount = new JButton("Account");
+		final JButton btnXemAccount = new JButton("Account");
 		btnXemAccount.setBounds(21, 213, 89, 31);
 		panel_khachHang.add(btnXemAccount);
 
@@ -703,6 +696,8 @@ public class ViewNhanVien1 extends JFrame {
 					txtSDT.setText(sdt);
 					txtDiaChi.setText(diaChi);
 				}
+				btnSua.setEnabled(true);
+				btnXemAccount.setEnabled(true);
 
 				Object selectedChucVu = chucVu.getSelectedItem();
 				if (selectedChucVu != null) {
@@ -771,11 +766,16 @@ public class ViewNhanVien1 extends JFrame {
 				String maTaiKhoan = generateAccountID();
 				String userName = generateNameAccount();
 				String password = "12345";
-				String role = "nv";
 				String maNV = maNhanVien;
-				System.out.println("mã tài khoản" + maTaiKhoan);
-				System.out.println("mã nhân viên" + maNV);
-				Account acc = new Account(maTaiKhoan, userName, password, role, maNV);
+				String role = "";
+				if (chucVuValue.equalsIgnoreCase("Nhân viên quản lí")) {
+					role = "admin";
+				} else if (chucVuValue.equalsIgnoreCase("Nhân viên bán hàng")) {
+					role = "nv";
+				} else {
+					role = "";
+				}
+				Account acc = new Account(maTaiKhoan, userName, password, maNV, role);
 				acc_dao.addAccount(acc);
 
 			}
@@ -801,6 +801,7 @@ public class ViewNhanVien1 extends JFrame {
 		});
 
 		// sửa nhân viên
+		btnSua.setEnabled(false);
 		btnSua.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				btnXacNhan.setEnabled(true);
@@ -860,15 +861,15 @@ public class ViewNhanVien1 extends JFrame {
 		});
 
 		// btn xem chi tiết account
+		btnXemAccount.setEnabled(false);
 		btnXemAccount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int selectedRowTableAccount = table.getSelectedRow();
 				if (selectedRowTableAccount != -1) {
 					String maNV = (String) table.getValueAt(selectedRowTableAccount, 0);
 					String hoTen = (String) table.getValueAt(selectedRowTableAccount, 1);
-					String role = chucVu.getSelectedItem().toString();
 					ViewAccount ac = new ViewAccount();
-					ac.setDataForAccount(maNV, hoTen, role); // Truyền dữ liệu từ nhân viên được chọn
+					ac.setDataForAccount(maNV, hoTen); // Truyền dữ liệu từ nhân viên được chọn
 					ac.setLocationRelativeTo(null);
 					ac.setVisible(true);
 				}
@@ -888,10 +889,8 @@ public class ViewNhanVien1 extends JFrame {
 
 					if (selectedFilter.equals("Nhân viên quản lí")) {
 						sorter.setRowFilter(RowFilter.regexFilter("Nhân viên quản lí", 7));
-					} else if (selectedFilter.equals("Nhân viên part-time")) {
-						sorter.setRowFilter(RowFilter.regexFilter("Nhân viên part-time", 7));
-					} else if (selectedFilter.equals("Nhân viên full-time")) {
-						sorter.setRowFilter(RowFilter.regexFilter("Nhân viên full-time", 7));
+					} else if (selectedFilter.equals("Nhân viên bán hàng")) {
+						sorter.setRowFilter(RowFilter.regexFilter("Nhân viên bán hàng", 7));
 					} else {
 						sorter.setRowFilter(null); // Hủy bỏ bất kỳ bộ lọc nào
 					}

@@ -4,9 +4,9 @@ public class Account {
 	 	private String accountID;
 	    private String userName;
 	    private String password;
-		private String role;
+	    private String role;
 	    private String maNV;
-	    public String getAccountID() {
+		public String getAccountID() {
 			return accountID;
 		}
 		public void setAccountID(String accountID) {
@@ -24,35 +24,28 @@ public class Account {
 		public void setPassword(String password) {
 			this.password = password;
 		}
-		public String getRole() {
-			return role;
-		}
-		public void setRole(String role) {
-			this.role = role;
-		}
+
 		public String getMaNV() {
 			return maNV;
 		}
 		public void setMaNV(String maNV) {
 			this.maNV = maNV;
 		}
+		public String getRole() {
+			return role;
+		}
+		public void setRole(String role) {
+			this.role = role;
+		}
 		public Account(String accountID, String userName, String password, String role, String maNV) {
 			super();
 			this.accountID = accountID;
 			this.userName = userName;
 			this.password = password;
-			this.role = role;
 			this.maNV = maNV;
+			this.role = role;
 		}
-		
-		
-		public Account() {
-			super();
-			// TODO Auto-generated constructor stub
-		}
-		@Override
-		public String toString() {
-			return "Account [accountID=" + accountID + ", userName=" + userName + ", password=" + password + ", role="
-					+ role + ", maNV=" + maNV + "]";
-		}
+
+	   
+	    
 }

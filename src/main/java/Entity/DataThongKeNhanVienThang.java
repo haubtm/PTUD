@@ -5,6 +5,13 @@ import java.util.List;
 public class DataThongKeNhanVienThang {
 	private List<NhanVien> danhSachNhanVien;
 	private int tongSoHoaDon;
+	private List<Integer> danhSachSoHoaDon;
+	public List<Integer> getDanhSachSoHoaDon() {
+		return danhSachSoHoaDon;
+	}
+	public void setDanhSachSoHoaDon(List<Integer> danhSachSoHoaDon) {
+		this.danhSachSoHoaDon = danhSachSoHoaDon;
+	}
 	public List<NhanVien> getDanhSachNhanVien() {
 		return danhSachNhanVien;
 	}
@@ -17,10 +24,11 @@ public class DataThongKeNhanVienThang {
 	public void setTongSoHoaDon(int tongSoHoaDon) {
 		this.tongSoHoaDon = tongSoHoaDon;
 	}
-	public DataThongKeNhanVienThang(List<NhanVien> danhSachNhanVien, int tongSoHoaDon) {
+	public DataThongKeNhanVienThang(List<NhanVien> danhSachNhanVien, int tongSoHoaDon, List<Integer> danhSachSoHoaDon) {
 		super();
 		this.danhSachNhanVien = danhSachNhanVien;
 		this.tongSoHoaDon = tongSoHoaDon;
+		this.danhSachSoHoaDon = danhSachSoHoaDon;
 	}
 	public DataThongKeNhanVienThang() {
 		super();
@@ -32,5 +40,8 @@ public class DataThongKeNhanVienThang {
 				+ "]";
 	}
 
+	public Integer getSoLuongHoaDon(int index) {
+		  return danhSachSoHoaDon.get(index);
+		}
 	
 }

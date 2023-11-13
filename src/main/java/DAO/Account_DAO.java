@@ -73,10 +73,11 @@ public class Account_DAO {
 	        Connection con = ConnectDB.getConnection();
 	        PreparedStatement stmt = null;
 	        try {
-	            stmt = con.prepareStatement("update TaiKhoan set taiKhoan = ?, matKhau = ? where maTaiKhoan = ?");
+	            stmt = con.prepareStatement("UPDATE TaiKhoan SET taiKhoan = ?, matKhau = ?, role = ? WHERE maTaiKhoan = ?");
 	            stmt.setString(1, ac.getUserName());
 	            stmt.setString(2, ac.getPassword());
-	            stmt.setString(3, ac.getAccountID());
+	            stmt.setString(3, ac.getRole());
+	            stmt.setString(4, ac.getAccountID());
 	            stmt.executeUpdate();
 	        } catch (SQLException ex) {
 	            ex.printStackTrace();

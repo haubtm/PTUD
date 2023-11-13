@@ -18,22 +18,24 @@ import Entity.NhanVien;
 
 public class ThongKeNhanVien_DAO {
     
-    public DataThongKeNhanVienThang getNhanVienNhieuHoaDonNhatTheoThang(int nam, int thang,int tongSoHoaDon) {
+    public DataThongKeNhanVienThang getNhanVienNhieuHoaDonNhatTheoThang(int nam, int thang,int tongSoHoaDon,int soLuong) {
         List<NhanVien> danhSachNhanVien = new ArrayList<>();
+    	List<Integer> danhSachSoHoaDon = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
 
         try {
             connection = database.getConnection();
-            String sql = "SELECT TOP 1 maNhanVien, COUNT(maHoaDon) AS soHoaDon "
+            String sql = "SELECT TOP (?) maNhanVien, COUNT(maHoaDon) AS soHoaDon "
                     + "FROM HoaDon "
                     + "WHERE YEAR(ngayLapHoaDon) = ? AND MONTH(ngayLapHoaDon) = ? "
                     + "GROUP BY maNhanVien "
                     + "ORDER BY soHoaDon DESC";
             statement = connection.prepareStatement(sql);
-            statement.setInt(1, nam);
-            statement.setInt(2, thang);
+            statement.setInt(1, soLuong);
+            statement.setInt(2, nam);
+            statement.setInt(3, thang);
             resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
@@ -42,6 +44,7 @@ public class ThongKeNhanVien_DAO {
                 danhSachNhanVien.add(nhanVien);
                 int soLuongHoaDon = resultSet.getInt("soHoaDon");
                 tongSoHoaDon += soLuongHoaDon; 
+                danhSachSoHoaDon.add(soLuongHoaDon);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -49,25 +52,27 @@ public class ThongKeNhanVien_DAO {
             close(statement);
         }
 
-        return new DataThongKeNhanVienThang(danhSachNhanVien, tongSoHoaDon);
+        return new DataThongKeNhanVienThang(danhSachNhanVien, tongSoHoaDon,danhSachSoHoaDon);
     }
     
-    public DataThongKeNhanVien  getNhanVienNhieuHoaDonNhatTheoNgay(int nam, int thang, int ngay,int tongSoHoaDon) {
+    public DataThongKeNhanVien  getNhanVienNhieuHoaDonNhatTheoNgay(int nam, int thang, int ngay,int tongSoHoaDon,int soLuong) {
         List<NhanVien> danhSachNhanVien = new ArrayList<>();
+    	List<Integer> danhSachSoHoaDon = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
             connection = database.getConnection();
-            String sql = "SELECT maNhanVien, COUNT(maHoaDon) AS soHoaDon "
+            String sql = "SELECT TOP (?) maNhanVien, COUNT(maHoaDon) AS soHoaDon "
                     + "FROM HoaDon "
                     + "WHERE YEAR(ngayLapHoaDon) = ? AND MONTH(ngayLapHoaDon) = ? AND DAY(ngayLapHoaDon) = ? "
                     + "GROUP BY maNhanVien "
                     + "ORDER BY soHoaDon DESC";
             statement = connection.prepareStatement(sql);
-            statement.setInt(1, nam);
-            statement.setInt(2, thang);
-            statement.setInt(3, ngay);
+            statement.setInt(1, soLuong);
+            statement.setInt(2, nam);
+            statement.setInt(3, thang);
+            statement.setInt(4, ngay);
             resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
@@ -76,29 +81,32 @@ public class ThongKeNhanVien_DAO {
                 danhSachNhanVien.add(nhanVien);
                 int soLuongHoaDon = resultSet.getInt("soHoaDon");
                 tongSoHoaDon += soLuongHoaDon; 
+                danhSachSoHoaDon.add(soLuongHoaDon);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             close(statement);
         }
-        return new DataThongKeNhanVien(danhSachNhanVien, tongSoHoaDon);
+        return new DataThongKeNhanVien(danhSachNhanVien, tongSoHoaDon,danhSachSoHoaDon);
     }
     
-    public DataThongKeNhanVienNam getSoLuongHoaDonTheoNam( int nam,int tongSoHoaDon) {
+    public DataThongKeNhanVienNam getSoLuongHoaDonTheoNam( int nam,int tongSoHoaDon,int soLuong) {
     	List<NhanVien> danhSachNhanVien = new ArrayList<>();
+    	List<Integer> danhSachSoHoaDon = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
         	connection = database.getConnection();
-        	String sql = "SELECT TOP 1 maNhanVien, COUNT(maHoaDon) AS soHoaDon "
+        	String sql = "SELECT TOP (?) maNhanVien, COUNT(maHoaDon) AS soHoaDon "
                     + "FROM HoaDon "
                     + "WHERE YEAR(ngayLapHoaDon) = ? "
                     + "GROUP BY maNhanVien "
                     + "ORDER BY soHoaDon DESC";
             statement = connection.prepareStatement(sql);
-            statement.setInt(1, nam);
+            statement.setInt(1, soLuong);
+            statement.setInt(2, nam);
             resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
@@ -106,7 +114,8 @@ public class ThongKeNhanVien_DAO {
                 nhanVien.setMaNhanVien(resultSet.getString("maNhanVien"));
                 danhSachNhanVien.add(nhanVien);
                 int soLuongHoaDon = resultSet.getInt("soHoaDon");
-                tongSoHoaDon += soLuongHoaDon; 
+                tongSoHoaDon = soLuongHoaDon; 
+                danhSachSoHoaDon.add(soLuongHoaDon);
             }
             
         } catch (SQLException e) {
@@ -115,7 +124,7 @@ public class ThongKeNhanVien_DAO {
             close(statement);
         }
 
-        return new DataThongKeNhanVienNam(danhSachNhanVien, tongSoHoaDon);
+        return new DataThongKeNhanVienNam(danhSachNhanVien, tongSoHoaDon,danhSachSoHoaDon);
     }
     
     public int getSoLuongHoaDonTheoNam1(String maNhanVien, int nam) {
